@@ -43,12 +43,13 @@
             width: 300px;
         }
 
-        table{
-            
+        table {
             background-color: rgb(251, 255, 0);
             font-size: 12px;
             border: 1px solid orange;
-            
+            margin: 10px;
+            width: 300px;
+
         }
     </style>
 </head>
@@ -57,25 +58,25 @@
 
     <div class="container">
         <div class="panel">
-            <button onclick="start()"id="start_game" class = "start_game">Start</button>
-            <button onclick="stop()" id="stop_game" class = "stop_game">Stop</button>
+            <button onclick="start()" id="start_game" class="start_game">Start</button>
+            <button onclick="stop()" id="stop_game" class="stop_game">Stop</button>
             <button onclick="reset()" id="reset_game" class="reset_game">Play again</button>
-            
+
             <br>
             <!--https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy-->
             <table id="data" style="display:list">
-              <tr>
-                <th scope="row">Longest time</th>
-                <th scope="row">Shortest time</th>
-                <th scope="row">Average</th>
-                <th scope="row">Click no</th>  
-              </tr>
-                
+                <tr>
+                    <th scope="row">Longest time</th>
+                    <th scope="row">Shortest time</th>
+                    <th scope="row">Average</th>
+
+                </tr>
+
                 <tr>
                     <td id="fastest"></td>
                     <td id="slowest"></td>
                     <td id="average"></td>
-                    <td id="noOfClicks"></td>
+
                 </tr>
             </table>
         </div>
@@ -83,7 +84,7 @@
     </div>
     <script>
         const colors = ["green", "blue", "red", "pink", "yellow"]
-        const fontcolors = ["orange","yellow","white", "blue","black"]
+        const fontcolors = ["orange", "yellow", "white", "blue", "black"]
         let counter = 0;
         let results = []
         let timeout
@@ -97,7 +98,7 @@
             let min = results[0]
             let max = results[0]
             let sum = 0;
-            let noClick=0;
+
             for (let i = 0; i < results.length; i++) {
                 if (min > results[i]) {
                     min = results[i]
@@ -106,19 +107,19 @@
                     max = results[i]
                 }
                 sum += results[i]
-                noClick++;
+
             }
             const average = Math.round(sum / results.length)
             document.getElementById("fastest").innerText = min
             document.getElementById("slowest").innerText = max
             document.getElementById("average").innerText = average
-            document.getElementById("noOfClicks").innerText = noClick
+
         }
-//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions
-//It's a new feature that introduced in ES6 and is called arrow function. The left part denotes the input of a function and the right part the output of that function.
+        //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions
+        //It's a new feature that introduced in ES6 and is called arrow function. The left part denotes the input of a function and the right part the output of that function.
         prepareClick = () => {
-            let time = Math.floor(Math.random() * 1 + 1) 
-                                 //Math. floor() truncates the decimal number to only the integer portion
+            let time = Math.floor(Math.random() * 1 + 1)
+            //Math. floor() truncates the decimal number to only the integer portion
             let date = new Date();
             console.log({ time })
 
@@ -136,7 +137,7 @@
                             let time2 = new Date();
                             const difference = time2 - time1
                             results.push(difference)
-                                                        //The push() method adds one or more elements to the end of an array and returns the new length of the array.
+                            //The push() method adds one or more elements to the end of an array and returns the new length of the array.
                             document.getElementById("board").removeEventListener("click", handler)
 
                             if (counter == 0) {
@@ -164,17 +165,17 @@
             continue_flag = true
             document.getElementById("data").style.display = "none"
             document.getElementById("start_game").style.visibility = "visible"
-         // hidden visibility - > https://www.w3schools.com/jsref/prop_style_visibility.asp
-
+            // hidden visibility - > https://www.w3schools.com/jsref/prop_style_visibility.asp
             document.getElementById("reset_game").style.display = "none"
         }
-        
+
         endGame = () => {
             continue_flag = false
             alert("gra skonczona, zobacz swoje wyniki w tabeli")
             document.getElementById("reset_game").style.background = "green"
             document.getElementById("reset_game").style.display = "block"//https://www.w3schools.com/jsref/prop_style_display.asp **********************************
-
+            document.getElementById("board").style.background = "gray"
+            document.getElementById("board").style.color = "white"
         }
         stop = () => {
             endGame()
