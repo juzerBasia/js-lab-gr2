@@ -1,49 +1,187 @@
-<html lang="pl">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>JS Lab</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, serif;
+            background-color: lightgray;
         }
 
-        h1 {
-            color: #0B3954;
+        .container {
+            display: flex;
+            justify-content: space-around;
         }
-        .green{color:green}
+
+        .game {
+            background-color: gray;
+            font-size: 20px;
+            width: 400px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            border-radius: 20px;
+            justify-content: center;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            align-self: center;
+        }
+
+        .reset_game {
+            display: none;
+        }
+
+        button {
+            margin: 10px;
+            height: 20px;
+            width: 300px;
+        }
+
+        table{
+            
+            background-color: rgb(251, 255, 0);
+            font-size: 12px;
+            border: 1px solid orange;
+            
+        }
     </style>
 </head>
+
 <body>
-<div id="app">
-    <h1 id="main-header">Moja aplikacja</h1>
-    <p>To będzie gra. A oto co muszę zrobić:</p>
-    <ol>
-        <li class="boring">Nauczyć się HTML</li>
-        <li class="boring">Nauczyć się CSS</li>
-        <li>Nauczyć się JS</li>
-        <li id="super-important">Zaimplementować</li>
-    </ol>
-</div>
-<input type="text" id="myTextField">
-<input type="checkbox" id="myCheckbox">
-<button type="button" onclick="readValues()">Odczytaj wartości</button>
-<script>
-function readValues(){
-    const isChecked = document.getElementById('myCheckbox').checked;
-if(isChecked){
-    alert(document.getElementById('myTextField').value);
-}
-}
 
-</script>
+    <div class="container">
+        <div class="panel">
+            <button onclick="start()"id="start_game" class = "start_game">Start</button>
+            <button onclick="stop()" id="stop_game" class = "stop_game">Stop</button>
+            <button onclick="reset()" id="reset_game" class="reset_game">Play again</button>
+            
+            <br>
+            <!--https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy-->
+            <table id="data" style="display:list">
+              <tr>
+                <th scope="row">Longest time</th>
+                <th scope="row">Shortest time</th>
+                <th scope="row">Average</th>
+                <th scope="row">Click no</th>  
+              </tr>
+                
+                <tr>
+                    <td id="fastest"></td>
+                    <td id="slowest"></td>
+                    <td id="average"></td>
+                    <td id="noOfClicks"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="game" id="board">Click when color change</div>
+    </div>
+    <script>
+        const colors = ["green", "blue", "red", "pink", "yellow"]
+        const fontcolors = ["orange","yellow","white", "blue","black"]
+        let counter = 0;
+        let results = []
+        let timeout
+        let continue_flag = true
+        start = () => {
+            document.getElementById("reset_game").style.display = "none"
+            prepareClick()
+        }
 
-<button type="button" onclick="removeBoringStuff()">Usuń nudne rzeczy</button>
-<script>  
-function removeBoringStuff(){
-    document.querySelectorAll("#app .boring").forEach((e) => e.remove())
-};
-</script>
+        countData = () => {
+            let min = results[0]
+            let max = results[0]
+            let sum = 0;
+            let noClick=0;
+            for (let i = 0; i < results.length; i++) {
+                if (min > results[i]) {
+                    min = results[i]
+                }
+                if (max < results[i]) {
+                    max = results[i]
+                }
+                sum += results[i]
+                noClick++;
+            }
+            const average = Math.round(sum / results.length)
+            document.getElementById("fastest").innerText = min
+            document.getElementById("slowest").innerText = max
+            document.getElementById("average").innerText = average
+            document.getElementById("noOfClicks").innerText = noClick
+        }
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions
+//It's a new feature that introduced in ES6 and is called arrow function. The left part denotes the input of a function and the right part the output of that function.
+        prepareClick = () => {
+            let time = Math.floor(Math.random() * 1 + 1) 
+                                 //Math. floor() truncates the decimal number to only the integer portion
+            let date = new Date();
+            console.log({ time })
+
+            if (continue_flag) {
+                document.getElementById("start_game").style.visibility = "hidden"
+                timeout = setTimeout(() => {
+                    current_color = colors[counter]
+                    current_fontcolor = fontcolors[counter]
+
+                    document.getElementById("board").style.background = current_color
+                    document.getElementById("board").style.color = current_fontcolor
+                    let time1 = new Date()
+                    document.getElementById("board").addEventListener("click", handler = () => {
+                        if (continue_flag) {
+                            let time2 = new Date();
+                            const difference = time2 - time1
+                            results.push(difference)
+                                                        //The push() method adds one or more elements to the end of an array and returns the new length of the array.
+                            document.getElementById("board").removeEventListener("click", handler)
+
+                            if (counter == 0) {
+                                document.getElementById("data").style.display = "block"
+                                document.getElementById("fastest").innerText = difference
+                                document.getElementById("slowest").innerText = difference
+                                document.getElementById("average").innerText = difference
+                            } else {
+                                countData()
+                            }
+                            counter++
+                            if (counter == 5) {
+                                endGame()
+                            } else {
+                                prepareClick()
+                            }
+                        }
+                    })
+                }, time * 1000)
+            }
+        }
+        reset = () => {
+            counter = 0
+            results = []
+            continue_flag = true
+            document.getElementById("data").style.display = "none"
+            document.getElementById("start_game").style.visibility = "visible"
+         // hidden visibility - > https://www.w3schools.com/jsref/prop_style_visibility.asp
+
+            document.getElementById("reset_game").style.display = "none"
+        }
+        
+        endGame = () => {
+            continue_flag = false
+            alert("gra skonczona, zobacz swoje wyniki w tabeli")
+            document.getElementById("reset_game").style.background = "green"
+            document.getElementById("reset_game").style.display = "block"//https://www.w3schools.com/jsref/prop_style_display.asp **********************************
+            document.getElementById("board").style.background = "gray"
+            document.getElementById("board").style.color = "white"
+
+        }
+        stop = () => {
+            endGame()
+        }
+    </script>
 </body>
+
 </html>
